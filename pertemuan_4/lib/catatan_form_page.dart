@@ -38,6 +38,7 @@ class _CatatanFormPageState extends State<CatatanFormPage> {
     if (_formKey.currentState!.validate()) {
       try {
         final dbHelper = DbHelper();
+        String pesan = '';
         if (_isEdit) {
           final catatanBaru = widget.catatan!.copyWith(
             judul: _judulController.text,
@@ -45,6 +46,7 @@ class _CatatanFormPageState extends State<CatatanFormPage> {
             kategori: _kategori,
           );
           await dbHelper.updateCatatan(catatanBaru);
+          pesan = 'Catatan diperbarui';
         } else {
           final catatanBaru = Catatan(
             judul: _judulController.text,
@@ -53,8 +55,14 @@ class _CatatanFormPageState extends State<CatatanFormPage> {
             dibuatPada: DateTime.now(),
           );
           await dbHelper.insertCatatan(catatanBaru);
+          pesan = 'Catatan ditambahkan';
         }
-        if (mounted) Navigator.pop(context, true);
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text(pesan)),
+          );
+          Navigator.pop(context, true);
+        }
       } catch (e) {
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
@@ -69,7 +77,7 @@ class _CatatanFormPageState extends State<CatatanFormPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(_isEdit ? 'Ubah Catatan' : 'Tambah Catatan'),
+        title: Text(_isEdit ? 'Edit Catatan' : 'Tambah Catatan'),
         actions: [
           IconButton(
             onPressed: _simpan,
@@ -102,7 +110,7 @@ class _CatatanFormPageState extends State<CatatanFormPage> {
             ),
             const SizedBox(height: 16),
             DropdownButtonFormField<int>(
-              value: _kategori,
+              initialValue: _kategori,
               decoration: const InputDecoration(
                 labelText: 'Kategori',
                 border: OutlineInputBorder(),

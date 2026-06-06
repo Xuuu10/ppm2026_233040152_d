@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'catatan.dart';
 import 'db_helper.dart';
 import 'catatan_form_page.dart';
+import 'catatan_detail_page.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
@@ -25,6 +26,12 @@ class MyApp extends StatelessWidget {
           final arg = settings.arguments as Catatan?;
           return MaterialPageRoute(
             builder: (_) => CatatanFormPage(catatan: arg),
+          );
+        }
+        if (settings.name == '/detail') {
+          final arg = settings.arguments as Catatan;
+          return MaterialPageRoute(
+            builder: (_) => CatatanDetailPage(catatan: arg),
           );
         }
         return MaterialPageRoute(builder: (_) => const MyHomePage(title: 'Catatan Mahasiswa'));
@@ -106,7 +113,11 @@ class _MyHomePageState extends State<MyHomePage> {
               final catatan = listCatatan[index];
               return ListTile(
                 title: Text(catatan.judul),
-                subtitle: Text(catatan.isi),
+                subtitle: Text(
+                  catatan.isi,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                ),
                 trailing: IconButton(
                   icon: const Icon(Icons.delete, color: Colors.red),
                   onPressed: () => _hapusCatatan(catatan.id!),
@@ -114,7 +125,7 @@ class _MyHomePageState extends State<MyHomePage> {
                 onTap: () async {
                   final refresh = await Navigator.pushNamed(
                     context,
-                    '/form',
+                    '/detail',
                     arguments: catatan,
                   );
                   if (refresh == true) _refreshCatatan();
